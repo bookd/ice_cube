@@ -26,7 +26,7 @@ module IceCube
         :dealbreaker
       end
 
-      def validate(time, schedule)
+      def validate(time, recurrence_schedule)
         if rule.uses && rule.uses >= count
           raise CountExceeded
         end

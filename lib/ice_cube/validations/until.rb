@@ -41,7 +41,7 @@ module IceCube
         builder.piece(:until) << "until #{time.strftime(IceCube.to_s_time_format)}"
       end
 
-      def validate(t, schedule)
+      def validate(t, recurrence_schedule)
         raise UntilExceeded if t > time
       end
 

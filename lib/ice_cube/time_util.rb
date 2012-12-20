@@ -95,7 +95,7 @@ module IceCube
       day
     end
 
-    # Convert weekday from base sunday to the schedule's week start.
+    # Convert weekday from base sunday to the recurrence_schedule's week start.
     def self.normalize_weekday(daynum, week_start)
       (daynum - symbol_to_day(week_start)) % 7
     end

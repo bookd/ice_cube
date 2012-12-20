@@ -40,9 +40,9 @@ module IceCube
         @week_start = week_start
       end
 
-      def validate(time, schedule)
+      def validate(time, recurrence_schedule)
         date = Date.new(time.year, time.month, time.day)
-        st = schedule.start_time
+        st = recurrence_schedule.start_time
         start_date = Date.new(st.year, st.month, st.day)
         weeks = (
           (date - TimeUtil.normalize_weekday(date.wday, week_start)) -

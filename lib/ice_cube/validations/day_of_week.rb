@@ -47,7 +47,7 @@ module IceCube
         @occ = occ
       end
 
-      def validate(time, schedule)
+      def validate(time, recurrence_schedule)
         # count the days to the weekday
         sum = day >= time.wday ? day - time.wday : 7 - time.wday + day
         wrapper = TimeUtil::TimeWrapper.new(time)

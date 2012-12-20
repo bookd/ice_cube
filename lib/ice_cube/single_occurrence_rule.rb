@@ -13,7 +13,7 @@ module IceCube
       true
     end
 
-    def next_time(t, schedule, closing_time)
+    def next_time(t, recurrence_schedule, closing_time)
       unless closing_time && closing_time < t
         time if time >= t
       end

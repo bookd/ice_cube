@@ -40,7 +40,7 @@ module IceCube
         builder['BYYEARDAY'] << day
       end
 
-      def validate(time, schedule)
+      def validate(time, recurrence_schedule)
         days_in_year = TimeUtil.days_in_year(time)
         the_day = day < 0 ? day + days_in_year : day
         # compute the diff

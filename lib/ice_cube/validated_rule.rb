@@ -17,10 +17,10 @@ module IceCube
     include Validations::Until
 
     # Compute the next time after (or including) the specified time in respect
-    # to the given schedule
-    def next_time(time, schedule, closing_time)
+    # to the given recurrence_schedule
+    def next_time(time, recurrence_schedule, closing_time)
       @time = time
-      @schedule = schedule
+      @recurrence_schedule = recurrence_schedule
 
       until finds_acceptable_time?
         # Prevent a non-matching infinite loop
@@ -112,7 +112,7 @@ module IceCube
 
     def validated_results(validations_for_type)
       validations_for_type.map do |validation|
-        validation.validate(@time, @schedule)
+        validation.validate(@time, @recurrence_schedule)
       end
     end
 

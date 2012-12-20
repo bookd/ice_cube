@@ -6,7 +6,7 @@ module IceCube
 
     attr_reader :uses
 
-    # Is this a terminating schedule?
+    # Is this a terminating recurrence_schedule?
     def terminating?
       until_time || occurrence_count
     end
@@ -62,11 +62,11 @@ module IceCube
       @uses = 0
     end
 
-    def next_time(time, schedule, closing_time)
+    def next_time(time, recurrence_schedule, closing_time)
     end
 
-    def on?(time, schedule)
-      next_time(time, schedule, time) == time
+    def on?(time, recurrence_schedule)
+      next_time(time, recurrence_schedule, time) == time
     end
 
     # Whether this rule requires a full run

@@ -2,7 +2,7 @@ require 'yaml'
 
 module IceCube
 
-  class Schedule
+  class RecurrenceSchedule
 
     extend ::Deprecated
 
@@ -17,7 +17,7 @@ module IceCube
     attr_reader :end_time
     deprecated_alias :end_date, :end_time
 
-    # Create a new schedule
+    # Create a new recurrence_schedule
     def initialize(start_time = nil, options = {})
       self.start_time = start_time || TimeUtil.now
       self.end_time = options[:end_time]
@@ -38,7 +38,7 @@ module IceCube
     end
     deprecated_alias :end_date=, :end_time=
 
-    # Add a recurrence time to the schedule
+    # Add a recurrence time to the recurrence_schedule
     def add_recurrence_time(time)
       return nil if time.nil?
       rule = SingleOccurrenceRule.new(time)
@@ -49,7 +49,7 @@ module IceCube
     deprecated_alias :rdate, :rtime
     deprecated_alias :add_recurrence_date, :add_recurrence_time
 
-    # Add an exception time to the schedule
+    # Add an exception time to the recurrence_schedule
     def add_exception_time(time)
       return nil if time.nil?
       rule = SingleOccurrenceRule.new(time)
@@ -60,7 +60,7 @@ module IceCube
     deprecated_alias :exdate, :extime
     deprecated_alias :add_exception_date, :add_exception_time
 
-    # Add a recurrence rule to the schedule
+    # Add a recurrence rule to the recurrence_schedule
     def add_recurrence_rule(rule)
       @all_recurrence_rules << rule unless @all_recurrence_rules.include?(rule)
     end
@@ -72,7 +72,7 @@ module IceCube
       res.nil? ? [] : [res]
     end
 
-    # Add an exception rule to the schedule
+    # Add an exception rule to the recurrence_schedule
     def add_exception_rule(rule)
       @all_exception_rules << rule unless @all_exception_rules.include?(rule)
     end
@@ -96,7 +96,7 @@ module IceCube
     end
     alias :exrules :exception_rules
 
-    # Get the recurrence times that are on the schedule
+    # Get the recurrence times that are on the recurrence_schedule
     def recurrence_times
       @all_recurrence_rules.select { |r| r.is_a?(SingleOccurrenceRule) }.map(&:time)
     end
@@ -116,7 +116,7 @@ module IceCube
     deprecated_alias :remove_recurrence_date, :remove_recurrence_time
     deprecated_alias :remove_rdate, :remove_rtime
 
-    # Get the exception times that are on the schedule
+    # Get the exception times that are on the recurrence_schedule
     def exception_times
       @all_exception_rules.select { |r| r.is_a?(SingleOccurrenceRule) }.map(&:time)
     end
@@ -198,7 +198,7 @@ module IceCube
       occurs_between?(begin_time, closing_time)
     end
 
-    # Determine if the schedule is occurring at a given time
+    # Determine if the recurrence_schedule is occurring at a given time
     def occurring_at?(time)
       if duration
         return false if exception_time?(time)
@@ -208,16 +208,16 @@ module IceCube
       end
     end
 
-    # Determine if this schedule conflicts with another schedule
-    # @param [IceCube::Schedule] other_schedule - The schedule to compare to
+    # Determine if this recurrence_schedule conflicts with another recurrence_schedule
+    # @param [IceCube::RecurrenceSchedule] other_schedule - The recurrence_schedule to compare to
     # @param [Time] closing_time - the last time to consider
-    # @return [Boolean] whether or not the schedules conflict at all
+    # @return [Boolean] whether or not the recurrence_schedules conflict at all
     def conflicts_with?(other_schedule, closing_time = nil)
       closing_time = TimeUtil.ensure_time closing_time
       unless terminating? || other_schedule.terminating? || closing_time
         raise ArgumentError.new 'At least one schedule must be terminating to use #conflicts_with?'
       end
-      # Pick the terminating schedule, and other schedule
+      # Pick the terminating recurrence_schedule, and other schedule
       # No need to reverse if terminating? or there is a closing time
       terminating_schedule = self
       unless terminating? || closing_time
@@ -247,7 +247,7 @@ module IceCube
       false
     end
 
-    # Determine if the schedule occurs at a specific time
+    # Determine if the recurrence_schedule occurs at a specific time
     def occurs_at?(time)
       occurs_between?(time, time)
     end
@@ -269,7 +269,7 @@ module IceCube
       pieces.join(' / ')
     end
 
-    # Serialize this schedule to_ical
+    # Serialize this recurrence_schedule to_ical
     def to_ical(force_utc = false)
       pieces = []
       pieces << "DTSTART#{IcalBuilder.ical_format(start_time, force_utc)}"
@@ -282,17 +282,17 @@ module IceCube
       pieces.join("\n")
     end
 
-    # Convert the schedule to yaml
+    # Convert the recurrence_schedule to yaml
     def to_yaml(*args)
       IceCube::use_psych? ? Psych::dump(to_hash, *args) : YAML::dump(to_hash, *args)
     end
 
-    # Load the schedule from yaml
+    # Load the recurrence_schedule from yaml
     def self.from_yaml(yaml, options = {})
       from_hash IceCube::use_psych? ? Psych::load(yaml) : YAML::load(yaml), options
     end
 
-    # Convert the schedule to a hash
+    # Convert the recurrence_schedule to a hash
     def to_hash
       data = {}
       data[:start_date] = TimeUtil.serialize_time(start_time)
@@ -309,40 +309,40 @@ module IceCube
       data
     end
 
-    # Load the schedule from a hash
+    # Load the recurrence_schedule from a hash
     def self.from_hash(original_hash, options = {})
       original_hash[:start_date] = options[:start_date_override] if options[:start_date_override]
       # And then deserialize
       data = IceCube::FlexibleHash.new(original_hash)
-      schedule = IceCube::Schedule.new TimeUtil.deserialize_time(data[:start_date])
-      schedule.duration = data[:duration] if data[:duration]
-      schedule.end_time = TimeUtil.deserialize_time(data[:end_time]) if data[:end_time]
-      data[:rrules] && data[:rrules].each { |h| schedule.rrule(IceCube::Rule.from_hash(h)) }
-      data[:exrules] && data[:exrules].each { |h| schedule.exrule(IceCube::Rule.from_hash(h)) }
+      recurrence_schedule = IceCube::RecurrenceSchedule.new TimeUtil.deserialize_time(data[:start_date])
+      recurrence_schedule.duration = data[:duration] if data[:duration]
+      recurrence_schedule.end_time = TimeUtil.deserialize_time(data[:end_time]) if data[:end_time]
+      data[:rrules] && data[:rrules].each { |h| recurrence_schedule.rrule(IceCube::Rule.from_hash(h)) }
+      data[:exrules] && data[:exrules].each { |h| recurrence_schedule.exrule(IceCube::Rule.from_hash(h)) }
       data[:rtimes] && data[:rtimes].each do |t|
-        schedule.add_recurrence_time TimeUtil.deserialize_time(t)
+        recurrence_schedule.add_recurrence_time TimeUtil.deserialize_time(t)
       end
       data[:extimes] && data[:extimes].each do |t|
-        schedule.add_exception_time TimeUtil.deserialize_time(t)
+        recurrence_schedule.add_exception_time TimeUtil.deserialize_time(t)
       end
       # Also serialize old format for backward compat
       data[:rdates] && data[:rdates].each do |t|
-        schedule.add_recurrence_time TimeUtil.deserialize_time(t)
+        recurrence_schedule.add_recurrence_time TimeUtil.deserialize_time(t)
       end
       data[:exdates] && data[:exdates].each do |t|
-        schedule.add_exception_time TimeUtil.deserialize_time(t)
+        recurrence_schedule.add_exception_time TimeUtil.deserialize_time(t)
       end
-      schedule
+      recurrence_schedule
     end
 
-    # Determine if the schedule will end
+    # Determine if the recurrence_schedule will end
     # @return [Boolean] true if ending, false if repeating forever
     def terminating?
       recurrence_rules.empty? || recurrence_rules.all?(&:terminating?)
     end
 
-    def self.dump(schedule)
-      schedule.to_yaml
+    def self.dump(recurrence_schedule)
+      recurrence_schedule.to_yaml
     end
 
     def self.load(yaml)
@@ -357,7 +357,7 @@ module IceCube
       @all_exception_rules.each(&:reset)
     end
 
-    # Find all of the occurrences for the schedule between opening_time
+    # Find all of the occurrences for the recurrence_schedule between opening_time
     # and closing_time
     def find_occurrences(opening_time, closing_time = nil, limit = nil, &block)
       opening_time = TimeUtil.ensure_time opening_time

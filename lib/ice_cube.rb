@@ -16,7 +16,7 @@ module IceCube
   autoload :FlexibleHash, 'ice_cube/flexible_hash'
 
   autoload :Rule, 'ice_cube/rule'
-  autoload :Schedule, 'ice_cube/schedule'
+  autoload :RecurrenceSchedule, 'ice_cube/recurrence_schedule'
 
   autoload :IcalBuilder, 'ice_cube/builders/ical_builder'
   autoload :HashBuilder, 'ice_cube/builders/hash_builder'
@@ -74,7 +74,7 @@ module IceCube
     @use_psych ||= defined?(Psych) && defined?(Psych::VERSION)
   end
 
-  # Defines the format used by IceCube when printing out Schedule#to_s.
+  # Defines the format used by IceCube when printing out RecurrenceSchedule#to_s.
   # Defaults to '%B %e, %Y'
   def self.to_s_time_format
     @to_s_time_format ||= '%B %e, %Y'

@@ -39,9 +39,9 @@ module IceCube
         :day
       end
 
-      def validate(time, schedule)
+      def validate(time, recurrence_schedule)
         time_date = Date.new(time.year, time.month, time.day)
-        start_date = Date.new(schedule.start_time.year, schedule.start_time.month, schedule.start_time.day)
+        start_date = Date.new(recurrence_schedule.start_time.year, recurrence_schedule.start_time.month, recurrence_schedule.start_time.day)
         days = time_date - start_date
         unless days % interval === 0
           interval - (days % interval)
