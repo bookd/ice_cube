@@ -41,7 +41,7 @@ module IceCube
       end
 
       def validate(time, recurrence_schedule)
-        seconds = time.to_i - schedule.start_time.to_i
+        seconds = time.to_i - recurrence_schedule.start_time.to_i
         unless seconds % interval == 0
           interval - (seconds % interval)
         end
